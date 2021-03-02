@@ -52,6 +52,10 @@ export type BinaryPose2D = $ReadOnly<{|
 
 export type BinaryPoseStamped = $ReadOnly<BinaryStampedMessage & {| pose(): BinaryPose |}>;
 
+export type BinaryPath = $ReadOnly<BinaryStampedMessage & {|
+  poses(): ArrayView<BinaryPoseStamped>,
+|}>;
+
 export type BinaryPolygon = $ReadOnly<{| points(): ArrayView<BinaryPoint> |}>;
 export type BinaryPolygonStamped = $ReadOnly<BinaryStampedMessage & {| polygon(): BinaryPolygon |}>;
 

@@ -260,8 +260,12 @@ export default class BagDataProvider implements DataProvider {
       totalSizeOfMessages += data.length;
       numberOfMessages += 1;
     };
+
+    const LATCHED_TOPICS = ["/atlas/localization"];// copy because `topics` not readonly in rosbag
+    const latchedArray = topics.filter(value => LATCHED_TOPICS.includes(value));
+
     const latchedOptions = {
-      topics: ["/atlas/localization"],// copy because `topics` not readonly in rosbag
+      topics: latchedArray, // copy because `topics` not readonly in rosbag
       noParse: true,
       decompress: {
         bz2: (...args) => {

@@ -16,6 +16,7 @@ import type { MarkerMatcher } from "webviz-core/src/panels/ThreeDimensionalViz/T
 import Transforms from "webviz-core/src/panels/ThreeDimensionalViz/Transforms";
 import { cast, type BobjectMessage, type Topic, type Frame, type Message } from "webviz-core/src/players/types";
 import type {
+  BinaryPath,
   BinaryMarker,
   BinaryPolygonStamped,
   BinaryPoseStamped,
@@ -46,6 +47,7 @@ import {
   VISUALIZATION_MSGS_MARKER_ARRAY_DATATYPE,
   POSE_STAMPED_DATATYPE,
   NAV_MSGS_OCCUPANCY_GRID_DATATYPE,
+  NAV_MSGS_PATH_DATATYPE,
   POINT_CLOUD_DATATYPE,
   SENSOR_MSGS_LASER_SCAN_DATATYPE,
   GEOMETRY_MSGS_POLYGON_STAMPED_DATATYPE,
@@ -720,7 +722,12 @@ export default class SceneBuilder implements MarkerProvider {
 
   _consumeNonMarkerMessage = (topic: string, drawData: StampedMessage, type: number, originalMessage: ?any): void => {
     const sourcePose = emptyPose();
-    const pose = this.transforms.apply(sourcePose, sourcePose, drawData.header.frame_id, this.rootTransformID);
+    const pose = this.transforms.apply(sourcePose, sourcePose, drawData.header.frame_id, this.rootTransformID); 
+    if (topic == "/controller_path")
+    {
+   //   console.log(pose);
+     // console.log("Hello");
+    }
     if (!pose) {
       const error = this._addError(this.errors.topicsMissingTransforms, topic);
       error.frameIds.add(drawData.header.frame_id);
@@ -792,6 +799,22 @@ export default class SceneBuilder implements MarkerProvider {
         );
         break;
       }
+      case NAV_MSGS_PATH_DATATYPE:
+        // flatten btn: set empty z values to be at the same level as the flattenedZHeightPose
+        const pathStamped = cast<BinaryPath>(message);
+        if (pathStamped.poses().length() === 0) {
+          break;
+        }
+        console.log(pathStamped.poses().toArray().map(pose => deepParse(pose.pose().position())));
+        const newMessage = {
+          header: deepParse(pathStamped.header()),
+          points: pathStamped.poses().toArray().map(pose => deepParse(pose.pose().position())),
+          closed: false,
+          scale: { x: 0.2 },
+          color: { r: 1, g: 0, b: 0, a: 1 },
+        };
+        this._consumeNonMarkerMessage(topic, newMessage, 8 /* cubes*/, message);
+        break;
       case NAV_MSGS_OCCUPANCY_GRID_DATATYPE:
         // flatten btn: set empty z values to be at the same level as the flattenedZHeightPose
         this._consumeOccupancyGrid(topic, deepParse(message));

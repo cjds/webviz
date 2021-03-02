@@ -100,6 +100,9 @@ export default class MessageCollector {
   }
 
   _addItem(key: string, item: ObjectWithInteractionData, lifetime: ?Time): void {
+   if (key == "/controller_path"){
+	   //console.log(item);
+   }
     const existing = this.markers.get(key);
     if (existing) {
       existing.update(item, this.clock, lifetime);

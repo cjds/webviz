@@ -75,6 +75,7 @@ export function panelsByCategory() {
 export function perPanelHooks() {
   const BlurIcon = require("@mdi/svg/svg/blur.svg").default;
   const GridIcon = require("@mdi/svg/svg/grid.svg").default;
+  const PathIcon = require("@mdi/svg/svg/chart-line-variant.svg").default;
   const HexagonIcon = require("@mdi/svg/svg/hexagon.svg").default;
   const HexagonMultipleIcon = require("@mdi/svg/svg/hexagon-multiple.svg").default;
   const PentagonOutlineIcon = require("@mdi/svg/svg/pentagon-outline.svg").default;
@@ -85,6 +86,7 @@ export function perPanelHooks() {
   const { defaultMapPalette } = require("webviz-core/src/panels/ThreeDimensionalViz/commands/utils");
   const {
     GEOMETRY_MSGS_POLYGON_STAMPED_DATATYPE,
+    NAV_MSGS_PATH_DATATYPE,
     NAV_MSGS_OCCUPANCY_GRID_DATATYPE,
     POINT_CLOUD_DATATYPE,
     POSE_STAMPED_DATATYPE,
@@ -106,6 +108,7 @@ export function perPanelHooks() {
     POSE_STAMPED_DATATYPE,
     POINT_CLOUD_DATATYPE,
     SENSOR_MSGS_LASER_SCAN_DATATYPE,
+    NAV_MSGS_PATH_DATATYPE,
     NAV_MSGS_OCCUPANCY_GRID_DATATYPE,
     GEOMETRY_MSGS_POLYGON_STAMPED_DATATYPE,
     TF_DATATYPE,
@@ -182,6 +185,7 @@ export function perPanelHooks() {
       iconsByDatatype: {
         [VISUALIZATION_MSGS_MARKER_DATATYPE]: HexagonIcon,
         [VISUALIZATION_MSGS_MARKER_ARRAY_DATATYPE]: HexagonMultipleIcon,
+        [NAV_MSGS_PATH_DATATYPE]: PathIcon,
         [NAV_MSGS_OCCUPANCY_GRID_DATATYPE]: GridIcon,
         [SENSOR_MSGS_LASER_SCAN_DATATYPE]: RadarIcon,
         [GEOMETRY_MSGS_POLYGON_STAMPED_DATATYPE]: PentagonOutlineIcon,
