@@ -236,15 +236,51 @@ export default class BagDataProvider implements DataProvider {
     let totalSizeOfMessages = 0;
     let numberOfMessages = 0;
     const messages: Message[] = [];
-    const onMessage = (msg) => {
+    const onLatchedMessage = (msg) => {
+
       const { data, topic, timestamp } = msg;
-      messages.push({
+
+     messages.push({
+        topic,
+        receiveTime: end,
+        message: data.buffer.slice(data.byteOffset, data.byteOffset + data.length),
+      });
+      totalSizeOfMessages += data.length;
+      numberOfMessages += 1;
+    };
+    const onMessage = (msg) => {
+
+      const { data, topic, timestamp } = msg;
+
+     messages.push({
         topic,
         receiveTime: timestamp,
         message: data.buffer.slice(data.byteOffset, data.byteOffset + data.length),
       });
       totalSizeOfMessages += data.length;
       numberOfMessages += 1;
+    };
+    const latchedOptions = {
+      topics: ["/atlas/localization"],// copy because `topics` not readonly in rosbag
+      noParse: true,
+      decompress: {
+        bz2: (...args) => {
+          try {
+            return Buffer.from(Bzip2.decompressFile(...args));
+          } catch (error) {
+            reportMalformedError("bz2 decompression", error);
+            throw error;
+          }
+        },
+        lz4: (...args) => {
+          try {
+            return decompress(...args);
+          } catch (error) {
+            reportMalformedError("lz4 decompression", error);
+            throw error;
+          }
+        },
+      },
     };
     const options = {
       topics: topics.slice(), // copy because `topics` not readonly in rosbag
@@ -272,6 +308,7 @@ export default class BagDataProvider implements DataProvider {
     };
     try {
       await this._bag.readMessages(options, onMessage);
+      await this._bag.readMessages(latchedOptions, onLatchedMessage);
     } catch (error) {
       reportMalformedError("bag parsing", error);
       throw error;

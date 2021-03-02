@@ -54,7 +54,7 @@ export default function TreeNodeMenu({
 }: Props) {
   const [isOpen, setIsOpen] = useState(false);
 
-  const { toggleCheckAllAncestors, toggleCheckAllDescendants } = useGuaranteedContext(
+  const { toggleAlwaysLatest, toggleCheckAllAncestors, toggleCheckAllDescendants } = useGuaranteedContext(
     TopicTreeContext,
     "TopicTreeContext"
   );
@@ -108,6 +108,20 @@ export default function TreeNodeMenu({
               <SItemContent>
                 <span style={{ paddingRight: 8 }}>Toggle descendants</span>
                 <KeyboardShortcut keys={["Shift", "Enter"]} />
+              </SItemContent>
+            </Item>
+            <Item
+              style={{ padding: "0 12px", ...(disableBaseColumn ? DISABLED_STYLE : undefined) }}
+              onClick={() => {
+                if (disableBaseColumn) {
+                  return;
+                }
+                toggleAlwaysLatest(nodeKey, 0);
+                setIsOpen(false);
+              }}>
+              <SItemContent>
+                <span style={{ paddingRight: 8 }}>Always latest</span>
+                <KeyboardShortcut keys={["Mod4", "Enter"]} />
               </SItemContent>
             </Item>
             {hasFeatureColumn && (
