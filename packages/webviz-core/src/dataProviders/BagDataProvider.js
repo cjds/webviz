@@ -236,6 +236,21 @@ export default class BagDataProvider implements DataProvider {
     let totalSizeOfMessages = 0;
     let numberOfMessages = 0;
     const messages: Message[] = [];
+    // ADDED BY FETCH @cjds
+    // TODO(@cjds): The hope is to one day reconcile with Webviz master. However currenty there
+    // is no good support for latched messages baked into Webviz
+    const onLatchedMessage = (msg) => {
+
+      const { data, topic, timestamp } = msg;
+
+     messages.push({
+        topic,
+        receiveTime: end,
+        message: data.buffer.slice(data.byteOffset, data.byteOffset + data.length),
+      });
+      totalSizeOfMessages += data.length;
+      numberOfMessages += 1;
+    };
     const onMessage = (msg) => {
       const { data, topic, timestamp } = msg;
       messages.push({
@@ -270,8 +285,37 @@ export default class BagDataProvider implements DataProvider {
         },
       },
     };
+    // ADDED BY FETCH @cjds
+    // TODO(@cjds): Read above note about latched messages
+    const LATCHED_TOPICS = ["/atlas/localization"];// copy because `topics` not readonly in rosbag
+    const latchedArray = topics.filter(value => LATCHED_TOPICS.includes(value));
+
+    const latchedOptions = {
+      topics: latchedArray, // copy because `topics` not readonly in rosbag
+      noParse: true,
+      endTime: end,
+      decompress: {
+        bz2: (...args) => {
+          try {
+            return Buffer.from(Bzip2.decompressFile(...args));
+          } catch (error) {
+            reportMalformedError("bz2 decompression", error);
+            throw error;
+          }
+        },
+        lz4: (...args) => {
+          try {
+            return decompress(...args);
+          } catch (error) {
+            reportMalformedError("lz4 decompression", error);
+            throw error;
+          }
+        },
+      },
+    };
     try {
       await this._bag.readMessages(options, onMessage);
+      await this._bag.readMessages(latchedOptions, onLatchedMessage);
     } catch (error) {
       reportMalformedError("bag parsing", error);
       throw error;
