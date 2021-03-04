@@ -813,7 +813,7 @@ export default class SceneBuilder implements MarkerProvider {
           scale: { x: 0.2 },
           color: { r: 1, g: 0, b: 0, a: 1 },
         };
-        this._consumeNonMarkerMessage(topic, newMessage, 8 /* cubes*/, message);
+        this._consumeNonMarkerMessage(topic, newMessage, 4 /* cubes*/, message);
         break;
       case NAV_MSGS_OCCUPANCY_GRID_DATATYPE:
         // flatten btn: set empty z values to be at the same level as the flattenedZHeightPose
