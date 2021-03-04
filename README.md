@@ -1,3 +1,14 @@
+# WARNING!!!! Fetch Changes !!!!WARNING
+
+This is a Fetch fork of webviz. We do want to be on standard Webviz but until changes are integrated, we will be using this fork to release Webviz internally. If you do make changes please add them to this list and PR back to the [original Webviz repo](https://github.com/cruise-automation/webviz)
+
+Changes we have made:
+
+1. [[Commit]](https://github.com/fetchrobotics/webviz/commit/e6f1f5e1cbfef0123856670b2720bc0563fbfec3
+) Support for `nav_msgs/Path`. PR is [here](https://github.com/cruise-automation/webviz/pull/592). Adds support for Paths that we use extensively in our code
+2. [[Commit]](https://github.com/fetchrobotics/webviz/commit/f2c271ac47ffd97380a8a75b788daedbbb8d989a) Support for latched topics. Issue is [here](https://github.com/cruise-automation/webviz/issues/314). Confirmation that there is no current fix is [here](https://webvizchat.slack.com/archives/C01529BEHAP/p1614365865007500?thread_ts=1613589725.043000&cid=C01529BEHAP). We added the simplest fix with the fewest changes we could
+3. I changed this Readme :t-rex:
+
 # [Webviz](https://webviz.io/) [![CircleCI](https://circleci.com/gh/cruise-automation/webviz.svg?style=svg)](https://circleci.com/gh/cruise-automation/webviz)
 
 ![webviz-os-demo](https://user-images.githubusercontent.com/177461/88328232-fa27b880-ccdc-11ea-9167-0d9339254729.gif)
