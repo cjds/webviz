@@ -22,14 +22,16 @@ import { colors } from "webviz-core/src/util/sharedStyleConstants";
 
 type PoseSettings = {|
   overrideColor?: ?string,
-  alpha?: number,
-  size?: {
-    headLength: number,
-    headWidth: number,
-    shaftWidth: number,
-  },
-  modelType?: "car-model" | "arrow" | "car-outline",
-  addCarOutlineBuffer?: boolean,
+    alpha ?: number,
+    size ?: {
+      headLength: number,
+      headWidth: number,
+      shaftWidth: number,
+      tipPoint: number,
+      tailPoint: number,
+    },
+    modelType ?: "freight100-model" | "freight100-outline" | "freight500-model" | "freight1500-model" | "arrow",
+    addCarOutlineBuffer ?: boolean,
 |};
 
 export default function PoseSettingsEditor(props: TopicSettingsEditorProps<PoseStamped, PoseSettings>) {
@@ -37,23 +39,26 @@ export default function PoseSettingsEditor(props: TopicSettingsEditorProps<PoseS
 
   const settingsByCarType = React.useMemo(() => {
     switch (settings.modelType) {
-      case "car-model": {
-        const alpha = settings.alpha != null ? settings.alpha : 1;
-        return (
-          <Flex col>
-            <SLabel>Alpha</SLabel>
-            <SInput
-              type="number"
-              value={alpha.toString()}
-              min={0}
-              max={1}
-              step={0.1}
-              onChange={(e) => onSettingsChange({ ...settings, alpha: parseFloat(e.target.value) })}
-            />
-          </Flex>
-        );
-      }
-      case "car-outline": {
+      case "freight100-model":
+      case "freight500-model":
+      case "freight1500-model":
+        {
+          const alpha = settings.alpha != null ? settings.alpha : 1;
+          return (
+            <Flex col>
+              <SLabel>Alpha</SLabel>
+              <SInput
+                type="number"
+                value={alpha.toString()}
+                min={0}
+                max={1}
+                step={0.1}
+                onChange={(e) => onSettingsChange({ ...settings, alpha: parseFloat(e.target.value) })}
+              />
+            </Flex>
+          );
+        }
+      case "freight100-outline": {
         return (
           <>
             <SLabel>Color of outline</SLabel>
@@ -67,6 +72,8 @@ export default function PoseSettingsEditor(props: TopicSettingsEditorProps<PoseS
       case "arrow":
       default: {
         const currentShaftWidth = settings.size?.shaftWidth ?? 2;
+        const currentTipPoint = settings.size?.tipPoint ?? 3.82;
+        const currentTailPoint = settings.size?.tailPoint ?? -0.88;
         const currentHeadWidth = settings.size?.headWidth ?? 2;
         const currentHeadLength = settings.size?.headLength ?? 0.1;
         return (
@@ -83,6 +90,24 @@ export default function PoseSettingsEditor(props: TopicSettingsEditorProps<PoseS
               placeholder="2"
               onChange={(e) =>
                 onSettingsChange({ ...settings, size: { ...settings.size, shaftWidth: parseFloat(e.target.value) } })
+              }
+            />
+            <SLabel>Tip Point</SLabel>
+            <SInput
+              type="number"
+              value={currentTipPoint}
+              placeholder="3.82"
+              onChange={(e) =>
+                onSettingsChange({ ...settings, size: { ...settings.size, tipPoint: parseFloat(e.target.value) } })
+              }
+            />
+            <SLabel>Tail Point</SLabel>
+            <SInput
+              type="number"
+              value={currentTailPoint}
+              placeholder="-.88"
+              onChange={(e) =>
+                onSettingsChange({ ...settings, size: { ...settings.size, tailPoint: parseFloat(e.target.value) } })
               }
             />
             <SLabel>Head width</SLabel>
@@ -109,7 +134,7 @@ export default function PoseSettingsEditor(props: TopicSettingsEditorProps<PoseS
     }
   }, [onFieldChange, onSettingsChange, settings]);
 
-  const badModelTypeSetting = React.useMemo(() => !["car-model", "car-outline", "arrow"].includes(settings.modelType), [
+  const badModelTypeSetting = React.useMemo(() => !["freight100-model", "freight100-outline", "freight500-model", "freight1500-model", "arrow"].includes(settings.modelType), [
     settings,
   ]);
 
@@ -143,8 +168,10 @@ export default function PoseSettingsEditor(props: TopicSettingsEditorProps<PoseS
           onSettingsChange({ ...settings, modelType: e.target.value, alpha: undefined });
         }}>
         {[
-          { value: "car-model", title: "Car Model" },
-          { value: "car-outline", title: "Car Outline" },
+          { value: "freight100-model", title: "Freight100 Model" },
+          { value: "freight100-outline", title: "Freight100 Outline" },
+          { value: "freight500-model", title: "Freight500 Model" },
+          { value: "freight1500-model", title: "Freight1500 Model" },
           { value: "arrow", title: "Arrow" },
         ].map(({ value, title }) => (
           <div key={value} style={{ marginBottom: "4px", display: "flex" }}>
