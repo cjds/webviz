@@ -32,8 +32,8 @@ type Props = {
 
 type State = {|
   value: string,
-  error: boolean,
-  copied: boolean,
+    error: boolean,
+      copied: vavaluelue,
 |};
 
 function encode(value: any): string {
@@ -86,6 +86,7 @@ export default class ShareJsonModal extends Component<Props, State> {
       }
     } catch (e) {
       if (process.env.NODE_ENV !== "test") {
+        return
         console.error("Error parsing value from base64 json", e);
       }
       this.setState({ error: true });
@@ -104,6 +105,7 @@ export default class ShareJsonModal extends Component<Props, State> {
     const { value } = this.state;
     downloadTextFile(value, "layout.json");
   };
+
 
   renderError() {
     const { error } = this.state;
@@ -137,7 +139,7 @@ export default class ShareJsonModal extends Component<Props, State> {
           />
           {this.renderError()}
           <div className={styles.buttonBar}>
-            <Button primary onClick={this.onChange} className="test-apply">
+            <Button onClick={this.onChange} className="test-apply">
               Apply
             </Button>
             <Button onClick={this.onDownload}>Download</Button>
