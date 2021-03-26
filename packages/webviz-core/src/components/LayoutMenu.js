@@ -7,7 +7,6 @@
 //  You may not use this file except in compliance with the License.
 import CodeJsonIcon from "@mdi/svg/svg/code-json.svg";
 import ShareIcon from "@mdi/svg/svg/share.svg";
-
 import React, { useState } from "react";
 
 import LayoutIcon from "webviz-core/src/assets/layout.svg";

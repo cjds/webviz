@@ -14,7 +14,6 @@ import { loadLayout } from "webviz-core/src/actions/panels";
 import renderToBody from "webviz-core/src/components/renderToBody";
 import ShareJsonModal from "webviz-core/src/components/ShareJsonModal";
 import ShareLinkModal from "webviz-core/src/components/ShareLinkModal";
-
 import type { State } from "webviz-core/src/reducers";
 import type { PanelsState } from "webviz-core/src/reducers/panels";
 
@@ -74,10 +73,8 @@ const ShareModal = connect<Props, OwnProps, _, _, _, _>(
 
 export function openLayoutModal(history?: BrowserHistory) {
   const modal = renderToBody(<LayoutModal history={history} onRequestClose={() => modal.remove()} />);
-
 }
 
 export function openShareModal(history?: BrowserHistory) {
   const modal = renderToBody(<ShareModal history={history} onRequestClose={() => modal.remove()} />);
 }
-
