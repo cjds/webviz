@@ -15,6 +15,8 @@ import LaserScanSettingsEditor from "./LaserScanSettingsEditor";
 import MarkerSettingsEditor from "./MarkerSettingsEditor";
 import PointCloudSettingsEditor from "./PointCloudSettingsEditor";
 import PoseSettingsEditor from "./PoseSettingsEditor";
+import OccupancyGridSettingsEditor from "./OccupancyGridSettingsEditor";
+import PolygonSettingsEditor from "./PolygonSettingsEditor";
 import styles from "./TopicSettingsEditor.module.scss";
 import ErrorBoundary from "webviz-core/src/components/ErrorBoundary";
 import Flex from "webviz-core/src/components/Flex";
@@ -31,6 +33,8 @@ import {
   SENSOR_MSGS_LASER_SCAN_DATATYPE,
   WEBVIZ_MARKER_DATATYPE,
   NAV_MSGS_PATH_DATATYPE,
+  NAV_MSGS_OCCUPANCY_GRID_DATATYPE,
+  GEOMETRY_MSGS_POLYGON_STAMPED_DATATYPE,
 } from "webviz-core/src/util/globalConstants";
 
 export const LINED_CONVEX_HULL_RENDERING_SETTING = "LinedConvexHull";
@@ -118,9 +122,9 @@ export function CommonDecaySettings({
 
 export type TopicSettingsEditorProps<Msg, Settings: {}> = {|
   message: ?Msg,
-  settings: Settings,
-  onFieldChange: (name: string, value: any) => void,
-  onSettingsChange: ({} | (({}) => {})) => void,
+    settings: Settings,
+      onFieldChange: (name: string, value: any) => void,
+        onSettingsChange: ({} | (({ }) => { })) => void,
 |};
 
 export function topicSettingsEditorForDatatype(datatype: string): ?ComponentType<TopicSettingsEditorProps<any, any>> {
@@ -136,10 +140,13 @@ export function topicSettingsEditorForDatatype(datatype: string): ?ComponentType
     "visualization_msgs/Marker": MarkerSettingsEditor,
     "visualization_msgs/MarkerArray": MarkerSettingsEditor,
     [NAV_MSGS_PATH_DATATYPE]: MarkerSettingsEditor,
+    [NAV_MSGS_OCCUPANCY_GRID_DATATYPE]: OccupancyGridSettingsEditor,
+    [GEOMETRY_MSGS_POLYGON_STAMPED_DATATYPE]: PolygonSettingsEditor,
     ...getGlobalHooks().perPanelHooks().ThreeDimensionalViz.topicSettingsEditors,
   };
   return editors[datatype];
 }
+
 
 export function canEditDatatype(datatype: string): boolean {
   return topicSettingsEditorForDatatype(datatype) != null;
@@ -153,12 +160,12 @@ export function canEditNamespaceOverrideColorDatatype(datatype: string): boolean
 
 type Props = {|
   topic: Topic,
-  message: any,
-  settings: ?{},
-  onSettingsChange: ({}) => void,
+    message: any,
+      settings: ?{ },
+onSettingsChange: ({ }) => void,
 |};
 
-const TopicSettingsEditor = React.memo<Props>(function TopicSettingsEditor({
+const TopicSettingsEditor = React.memo < Props > (function TopicSettingsEditor({
   topic,
   message,
   settings,
