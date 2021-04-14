@@ -13,6 +13,8 @@ import styles from "./ShareJsonModal.module.scss";
 import Button from "webviz-core/src/components/Button";
 import Flex from "webviz-core/src/components/Flex";
 import Modal from "webviz-core/src/components/Modal";
+import clipboard from "webviz-core/src/util/clipboard";
+
 import sendNotification from "webviz-core/src/util/sendNotification";
 
 type Props = {
@@ -59,17 +61,19 @@ export default class ShareLinkModal extends Component<Props, State> {
     state = {
         value: encode(this.props.value),
         url: "",
+        copied: false
     };
 
     generateCustomURL = () => {
         const { value } = this.state;
         const params = new URLSearchParams(window.location.search);
+        const host = params.get("host") || "http://localhost:1234/api/webviz/config/";
         const data = {
-            RosbagId: parseInt(params.get("s3bagid")),
+            RosbagId: parseInt(params.get("s3bagid")) || 0,
             SeekTo: parseInt(params.get("seek-to")) || 0,
             Config: value,
         };
-        fetch(params.get("host"), {
+        fetch(host, {
             method: "POST", // *GET, POST, PUT, DELETE, etc.
             mode: "cors", // no-cors, *cors, same-origin
             cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
@@ -83,10 +87,57 @@ export default class ShareLinkModal extends Component<Props, State> {
             body: JSON.stringify(data), // body data type must match "Content-Type" header
         })
             .then((response) => response.json())
-            .then((regex_data) => this.setState({ url: `${extractHostname(params.get("host"))}/uuid/${regex_data.UUID}` }));
+            .then((regex_data) => this.setState({ url: `${extractHostname(host)}/uuid/${regex_data.UUID}` }));
+    };
+
+    onCopy = () => {
+        const { url } = this.state;
+        clipboard.copy(url).then(() => {
+            this.setState({ copied: true });
+            setTimeout(() => this.setState({ copied: false }), 1500);
+        });
     };
 
     render() {
+        const params = new URLSearchParams(window.location.search);
+        const host = params.get("host");
+        const s3bagid = params.get("s3bagid");
+        let shareLinkGenerator =
+            <div style={{ color: "red" }}>
+                <p>You cannot use Generate URLs without Fetch Authorization. Please visit
+                <a style={{ color: "white" }} href="https://bagfinder.eks.fetchcore-cloud.com/webviz"> https://bagfinder.eks.fetchcore-cloud.com/webviz </a>
+                instead
+                </p>
+            </div>;
+        if (host) {
+            let info_text = <div>
+                <p style={{ lineHeight: "32px" }}>
+                    <em>Copy the current  notes, and layout into a UUID to share configuration</em>
+                </p>
+                <p style={{ color: "red" }}>Note: No bag will not be attached, as this webviz connected to S3 </p>
+            </div>
+            if (s3bagid) {
+                info_text = <p style={{ lineHeight: "32px" }}>
+                    <em>Copy the current bag, notes, and layout into a referencable URL</em>
+                </p>
+            }
+            shareLinkGenerator =
+                <div>
+                    {info_text}
+                    <p style={{ lineHeight: "32px" }}>
+                        <Button onClick={this.generateCustomURL} className="test-apply">
+                            Click me to generate URL
+                        </Button>
+                    </p>
+                    <hr />
+                    {this.state.url !== "" &&
+                        <div>
+                            <a href={this.state.url}> {this.state.url}</a>
+                            <Button onClick={this.onCopy}>{this.state.copied ? "Copied!" : "Copy"}</Button>
+                        </div>
+                    }
+                </div>;
+        }
         return (
             <Modal
                 onRequestClose={this.props.onRequestClose}
@@ -96,13 +147,7 @@ export default class ShareLinkModal extends Component<Props, State> {
                     display: "flex",
                 }}>
                 <Flex col className={styles.container}>
-                    <p style={{ lineHeight: "22px" }}>
-                        <em>Copy the current bag, notes, and layout into a referencable URL</em>
-                    </p>
-                    <Button onClick={this.generateCustomURL} className="test-apply">
-                        Click me to generate URL
-          </Button>
-                    {this.state.url !== "" && <a href={this.state.url}> {this.state.url}</a>}
+                    {shareLinkGenerator}
                 </Flex>
             </Modal>
         );
