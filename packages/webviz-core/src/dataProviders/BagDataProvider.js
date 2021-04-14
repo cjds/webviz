@@ -284,7 +284,7 @@ export default class BagDataProvider implements DataProvider {
     };
     // ADDED BY FETCH @cjds
     // TODO(@cjds): Read above note about latched messages
-    const LATCHED_TOPICS = ["/atlas/keepout", "/atlas/localization", "/docking/targeting/annotation"]; // copy because `topics` not readonly in rosbag
+    const LATCHED_TOPICS = ["/atlas/keepout", "/atlas/localization", "/docking/targeting/annotation", "/navigation_core_node/distance_map"];
     const latchedArray = topics.filter((value) => LATCHED_TOPICS.includes(value));
 
     const latchedOptions = {
